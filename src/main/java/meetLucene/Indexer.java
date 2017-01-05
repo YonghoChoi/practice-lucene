@@ -1,3 +1,5 @@
+package meetLucene;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -12,9 +14,8 @@ public class Indexer {
   private IndexWriter writer;
 
   public Indexer(String indexDir) throws IOException {
-    try (Directory dir = FSDirectory.open(new File(indexDir))) {
-      writer = new IndexWriter(dir, new StandardAnalyzer(Version.LUCENE_30), true, IndexWriter.MaxFieldLength.UNLIMITED);
-    }
+    Directory dir = FSDirectory.open(new File(indexDir));
+    writer = new IndexWriter(dir, new StandardAnalyzer(Version.LUCENE_30), true, IndexWriter.MaxFieldLength.UNLIMITED);
   }
 
   public void close() throws IOException {
@@ -23,8 +24,8 @@ public class Indexer {
 
   public int index(String dataDir, FileFilter filter) throws IOException {
     File[] files = new File(dataDir).listFiles();
-    for(File f : files) {
-      if( !f.isDirectory() &&
+    for (File f : files) {
+      if (!f.isDirectory() &&
               !f.isHidden() &&
               f.exists() &&
               f.canRead() &&
