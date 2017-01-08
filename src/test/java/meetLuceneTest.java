@@ -27,6 +27,7 @@ public class meetLuceneTest {
     }
 
     long end = System.currentTimeMillis();
+    // 색인 속도는 매우 중요. 하지만 한번 만들고 나면 계속 사용할 수 있으므로 검색 속도가 더 중요하다.
     System.out.println("Indexing " + numIndexed + " files took " + (end - start) + " ms");
   }
 
@@ -37,9 +38,10 @@ public class meetLuceneTest {
   }
 
   private static class TextFilesFilter implements FileFilter {
-    public boolean accept(File path) {
-      return path.getName().toLowerCase()        //6
-              .endsWith(".txt");                  //6
+    @Override
+    public boolean accept(File pathname) {
+      // FileFilter를 사용하여 색인할 txt 파일만 추려냄
+      return pathname.getName().toLowerCase().endsWith(".txt");
     }
   }
 }

@@ -15,7 +15,10 @@ public class Indexer {
 
   public Indexer(String indexDir) throws IOException {
     Directory dir = FSDirectory.open(new File(indexDir));
-    writer = new IndexWriter(dir, new StandardAnalyzer(Version.LUCENE_30), true, IndexWriter.MaxFieldLength.UNLIMITED);
+    writer = new IndexWriter(dir,   // 색인을 저장할 Directory 인스턴스. 여기서는 FSDirectory이므로 파일 저장.
+            new StandardAnalyzer(Version.LUCENE_30),  // 하위 호환성을 위해 버전 지정. 버그 조차 유지되어 있으므로 주의.
+            true,
+            IndexWriter.MaxFieldLength.UNLIMITED);
   }
 
   public void close() throws IOException {
@@ -35,15 +38,6 @@ public class Indexer {
     }
 
     return writer.numDocs();  // 색인 된 문서 건 수 리턴
-  }
-
-  private static class TextFilesFilter implements FileFilter {
-
-    @Override
-    public boolean accept(File pathname) {
-      // FileFilter를 사용하여 색인할 txt 파일만 추려냄
-      return pathname.getName().toLowerCase().endsWith(".txt");
-    }
   }
 
   protected Document getDocument(File f) throws IOException {
