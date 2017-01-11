@@ -1,4 +1,5 @@
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
@@ -9,8 +10,10 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.Version;
 import org.junit.Before;
 import org.junit.Test;
+import util.AnalyzerUtils;
 import util.TestUtil;
 
 import java.io.IOException;
@@ -39,6 +42,8 @@ public class IndexingTest {
       doc.add(new Field("contents", unstored[i], Field.Store.NO, Field.Index.ANALYZED));
       doc.add(new Field("city", text[i], Field.Store.YES, Field.Index.ANALYZED));
       writer.addDocument(doc);
+      AnalyzerUtils.displayTokens(new WhitespaceAnalyzer(Version.LUCENE_30), unstored[i]);
+      AnalyzerUtils.displayTokensWithFullDetails(new WhitespaceAnalyzer(Version.LUCENE_30), unstored[i]);
     }
 
     writer.close(); // 닫을 때 변경 사항을 저장공간에 반영.
