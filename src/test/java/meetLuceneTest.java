@@ -10,7 +10,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class meetLuceneTest {
+public class MeetLuceneTest {
   String indexDir = "src/test/index";   // 지정한 디렉토리에 색인 생성
   String dataDir = "src/test/data";    // 지정한 디렉토리에 담긴 txt 파일
 
