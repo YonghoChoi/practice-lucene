@@ -1,11 +1,6 @@
-import analyzer.MetaphoneReplacementAnalyzer;
-import analyzer.StopAnalyzer2;
-import analyzer.SynonymAnalyzer;
-import analyzer.TestSynonymEngine;
+package analyzer;
+
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
@@ -20,18 +15,11 @@ import org.junit.Test;
 import util.AnalyzerUtils;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
 
-public class AnalyzerTest {
-    @Test
-    public void testStopAnalyzer2() throws IOException {
-        AnalyzerUtils.assertAnalyzesTo(new StopAnalyzer2(),
-                "The quick brown...",
-                new String[]{"quick", "brown"});
-    }
-
+// 유사 발음 검색 테스트
+public class MetaphoneAnalyzerTest {
     // Apache Commons Codec에 포함되어 있는 Metaphone 알고리즘을 통해 유사 발음 검색 테스트
     @Test
     public void testKoolKat() throws IOException, ParseException {
@@ -67,37 +55,5 @@ public class AnalyzerTest {
         System.out.println();
         // 오타가 존재하지만 위와 결과가 동일.
         AnalyzerUtils.displayTokens(analyzer, "The quick brown phonx jumpd ovvar tha lazi dag");
-    }
-
-    @Test
-    public void testJumps() throws IOException {
-        SynonymAnalyzer synonyAnalyzer = new SynonymAnalyzer(new TestSynonymEngine());
-        TokenStream stream = synonyAnalyzer.tokenStream("contents",
-                new StringReader("jumps"));
-        TermAttribute term = stream.addAttribute(TermAttribute.class);
-        PositionIncrementAttribute posIncr = stream.addAttribute(PositionIncrementAttribute.class);
-
-        int i = 0;
-        String[] expected = new String[]{
-                "jumps",
-                "hops",
-                "leaps"
-        };
-
-        while (stream.incrementToken()) {
-            assertEquals(expected[i], term.term());
-
-            int expectedPos;
-            if (i == 0) {
-                expectedPos = 1;
-            } else {
-                expectedPos = 0;
-            }
-
-            assertEquals(expectedPos, posIncr.getPositionIncrement());
-            i++;
-        }
-
-        assertEquals(3, i);
     }
 }

@@ -52,12 +52,31 @@ public class AnalyzerUtils {
         System.out.println();
     }
 
+    public static void displayTokensWithPositions(Analyzer analyzer, String text) throws IOException {
+        TokenStream stream = analyzer.tokenStream("contents", new StringReader(text));
+        TermAttribute term = stream.addAttribute(TermAttribute.class);
+        PositionIncrementAttribute posIncr = stream.addAttribute(PositionIncrementAttribute.class);
+
+        int position = 0;
+        while(stream.incrementToken()) {
+            int increment = posIncr.getPositionIncrement();
+            if(increment > 0) {
+                position = position + increment;
+                System.out.println();
+                System.out.print(position + ": ");
+            }
+
+            System.out.print("[" + term.term() + "] ");
+        }
+        System.out.println();
+    }
+
     public static void assertAnalyzesTo(Analyzer analyzer, String input, String[] output) throws IOException {
         TokenStream stream = analyzer.tokenStream("field", new StringReader(input));
 
         TermAttribute termAttr = stream.addAttribute(TermAttribute.class);
 
-        for(String expected : output) {
+        for (String expected : output) {
             assert stream.incrementToken();
             assert expected.equals(termAttr.term());
         }

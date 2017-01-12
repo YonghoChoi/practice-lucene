@@ -26,7 +26,7 @@ public class SynonymAnalyzer extends Analyzer {
                         ), StopAnalyzer.ENGLISH_STOP_WORDS_SET),
                 engine
         );
-        return null;
+        return result;
     }
 
     @Override
