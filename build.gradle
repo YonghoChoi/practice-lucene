@@ -8,6 +8,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.21'
     compile 'commons-codec:commons-codec:1.10'
     compile 'org.apache.lucene:lucene-core:3.5.0'
+    compile 'org.apache.lucene:lucene-analyzers:3.5.0'
 
     testCompile 'junit:junit:4.12'
 }

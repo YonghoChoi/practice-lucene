@@ -1,5 +1,7 @@
 package analyzer;
 
+import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -58,7 +60,25 @@ public class KeyworkdAnalyzerTest {
         Query query = new QueryParser(Version.LUCENE_30,
                 "description",
                 new SimpleAnalyzer()).parse("partnum:Q36 AND SPACE");
+        // SimpleAnalyzer를 거치면 Q36은 q로 파싱됨.
+        // 하지만 색인 시 partnum은 분석기를 사용하지 않았으므로 Q36 그대로 색인되는데,
+        // 검색 시에 이를 분석하여 검색을 시도하므로 찾지 못하는 문제가 발생한다.
         assertEquals("note Q36 -> q", "+partnum:q +space", query.toString("description"));
         assertEquals("doc not found : (", 0, TestUtil.hitCount(searcher, query));
+    }
+
+    @Test
+    public void testPerFieldAnalyzer() throws ParseException, IOException {
+        // 위 testBasicQueryParser에서 문제된 부분을 PerFieldAnalyzerWrapper를 사용하여 해결.
+        // 필드별 분석기 설정.
+        // 여기서는 partnum 필드를 KeywordAnalyzer로 분석하도록 하여 Q36으로 동일하게 검색됨.
+        PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new SimpleAnalyzer());
+        analyzer.addAnalyzer("partnum", new KeywordAnalyzer());
+
+        Query query = new QueryParser(Version.LUCENE_30,
+                "description", analyzer).parse("partnum:Q36 AND SPACE");
+
+        assertEquals("Q36 kept as-is", "+partnum:Q36 +space", query.toString("description"));
+        assertEquals("doc found!", 1, TestUtil.hitCount(searcher, query));
     }
 }
